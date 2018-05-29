@@ -87,6 +87,7 @@ namespace SIL.WritingSystems
 		private readonly ObservableHashSet<PunctuationPattern> _punctuationPatterns;
 		private readonly BulkObservableList<QuotationMark> _quotationMarks;
 		private readonly KeyedBulkObservableList<string, CharacterSetDefinition> _characterSets;
+		private NumberingSystemDefinition _numberingSystem;
 		private readonly SimpleMonitor _ignoreVariantChanges = new SimpleMonitor();
 		private string _legacyMapping;
 		private bool _isGraphiteEnabled = true;
@@ -118,7 +119,7 @@ namespace SIL.WritingSystems
 		{
 			if (!IetfLanguageTag.IsValid(languageTag))
 				throw new ArgumentException("The language tag is invalid.", languageTag);
-
+			_numberingSystem = CLDRNumberingSystems.Default;
 			_languageTag = IetfLanguageTag.Canonicalize(languageTag);
 			IEnumerable<VariantSubtag> variantSubtags;
 			IetfLanguageTag.TryGetSubtags(_languageTag, out _language, out _script, out _region, out variantSubtags);
@@ -789,6 +790,12 @@ namespace SIL.WritingSystems
 		public KeyedBulkObservableList<string, CharacterSetDefinition> CharacterSets
 		{
 			get { return _characterSets; }
+		}
+
+		public NumberingSystemDefinition NumberingSystem
+		{
+			get => _numberingSystem;
+			set { Set(() => NumberingSystem, ref _numberingSystem, value); }
 		}
 
 		protected virtual void UpdateLanguageTag()
